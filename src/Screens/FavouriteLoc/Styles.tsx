@@ -115,6 +115,9 @@ const Styles = StyleSheet.create({
     },
     myEmptyStarStyle: {
         color: Colors.White,
+    },
+    emptyCompText:{
+        
     }
 
 

@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { StatusBar, StyleSheet } from 'react-native';
+
 import 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import MainNavigator from './src/Navigator'

@@ -1,4 +1,4 @@
-import { NavigationProp, ParamListBase, RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, RouteProp, useFocusEffect, useIsFocused, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { FlatList, ImageBackground, ScrollView, StatusBar, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Entypo';
@@ -10,10 +10,6 @@ import Styles from './Styles';
 import { databases } from '../../db/AppwriteDB';
 import { Query } from 'appwrite';
 import DBkeys from '../../Constant/DBkeys';
-import FavouriteLoc from '../FavouriteLoc';
-
-
-
 
 const categoriesStyles: { [key in Category]: any } = {
   All: Styles.itemCat1,
@@ -22,7 +18,6 @@ const categoriesStyles: { [key in Category]: any } = {
   Tea: Styles.itemCat4,
   Cookie: Styles.itemCat5,
 };
-
 
 const categoryMapping: { [key in Category]: string } = {
   All: 'All',
@@ -40,8 +35,7 @@ const ShopItem = () => {
   const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<Category>('All');
-  console.log("shopItems", shopItems, "hshhshshhs");
-
+   const isFocus = useIsFocused();
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBackgroundColor(Colors.background);
@@ -53,8 +47,6 @@ const ShopItem = () => {
     const fetchShopItems = async () => {
       setIsLoading(true);
       try {
-        console.log("shopId:", shopId, "Categories:", selectedCategories);
-
         const queryFilters = [Query.equal('shopsCaffine', shopId)];
         const categoryValue = categoryMapping[selectedCategories];
 
@@ -68,15 +60,17 @@ const ShopItem = () => {
           queryFilters
         );
 
-        const formattedItems = itemsData.documents.map((item: any) => ({
-          id: item.$id,
-          shopId: item.shopId,
-          name: item.name,
-          type: item.type,
-          price: item.price,
-          image: item.image,
-          favourite: item.favourite
-        }));
+        const formattedItems = itemsData.documents
+          .map((item: any) => ({
+            id: item.$id,
+            shopId: item.shopId,
+            name: item.name,
+            type: item.type,
+            price: item.price,
+            image: item.image,
+            favourite: item.favourite,
+          }))
+          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0));
 
         setShopItems(formattedItems);
       } catch (error) {
@@ -87,14 +81,14 @@ const ShopItem = () => {
     };
 
     fetchShopItems();
-  }, [shopId, selectedCategories]);
+  }, [shopId, selectedCategories,isFocus]);
 
   const handleCategoriesSelection = (categories: Category) => {
     setSelectedCategories(categories);
   };
+
   const toggleFavourite = async (itemId: string, currentFavouriteStatus: boolean) => {
     try {
-
       await databases.updateDocument(
         DBkeys.Database_id,
         DBkeys.shopitemColl_id,
@@ -103,9 +97,13 @@ const ShopItem = () => {
       );
 
       setShopItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === itemId ? { ...item, favourite: !currentFavouriteStatus } : item
-        )
+        prevItems
+          .map((item) =>
+          
+            item.id === itemId ? { ...item, favourite: !currentFavouriteStatus } : item
+          )
+          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0)) 
+          
       );
     } catch (error) {
       console.error("Error updating favourite status:", error);
@@ -139,7 +137,6 @@ const ShopItem = () => {
 
   return (
     <View style={Styles.mainContainer}>
-
       <View style={Styles.container}>
         <HeaderLine isMultiple={true} title="Shop Items" isBack={false} />
         <View style={Styles.LocContainer}>
@@ -172,7 +169,6 @@ const ShopItem = () => {
         <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
       ) : (
         <View style={Styles.itemOffC}>
-
           {shopItems.length === 0 ? (
             <Text style={{ textAlign: 'center', color: Colors.dark_grey, marginTop: 20 }}>No data available</Text>
           ) : (
@@ -185,7 +181,6 @@ const ShopItem = () => {
               showsVerticalScrollIndicator={false}
             />
           )}
-
         </View>
       )}
     </View>

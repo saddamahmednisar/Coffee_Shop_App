@@ -1,4 +1,4 @@
-import { NavigationProp, ParamListBase, useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, Image, StatusBar, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Entypo';
@@ -26,7 +26,7 @@ const HomeScreen = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigation: NavigationProp<ParamListBase> = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
-
+     const isFocus = useIsFocused();
     async function getCollections() {
         try {
             setIsLoading(true);
@@ -54,7 +54,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         getCollections();
-    }, []);
+    }, [isFocus]);
 
     useFocusEffect(
         React.useCallback(() => {
