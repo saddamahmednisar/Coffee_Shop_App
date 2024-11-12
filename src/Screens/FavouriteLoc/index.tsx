@@ -40,13 +40,13 @@ const FavouriteLoc = () => {
         }));
     };
 
-    const filteredShopData = searchQuery
-        ? shopData.filter((shop) => {
-            const normalizedShopName = shop.name.replace(/[^a-zA-Z]/g, '').toLowerCase();
-            const normalizedSearchQuery = searchQuery.replace(/[^a-zA-Z]/g, '').toLowerCase();
-            return normalizedShopName.includes(normalizedSearchQuery);
-        })
-        : shopData;
+    // const filteredShopData = searchQuery
+    //     ? shopData.filter((shop) => {
+    //         const normalizedShopName = shop.name.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    //         const normalizedSearchQuery = searchQuery.replace(/[^a-zA-Z]/g, '').toLowerCase();
+    //         return normalizedShopName.includes(normalizedSearchQuery);
+    //     })
+    //     : shopData;
 
     const renderShopItem = ({ item }: { item: Shop }) => {
         const isLiked = likedShops[item.id];
@@ -92,7 +92,7 @@ const FavouriteLoc = () => {
                         <Text style={Styles.sub2Text}>favourite Coffresh Shop’s:</Text>
                     </View>
                     <FlatList
-                        data={filteredShopData}
+                        data={shopData}
                         keyExtractor={(item) => item.id}
                         renderItem={renderShopItem}
                         style={Styles.scrollcont}

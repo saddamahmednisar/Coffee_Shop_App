@@ -126,7 +126,7 @@ const Styles = StyleSheet.create({
       marginVertical: 5
    },
    firstitem: {
-      flex: 1,
+      width:"48%",
       backgroundColor: Colors.White,
       borderRadius: 10,
       shadowOffset: {
@@ -151,7 +151,6 @@ const Styles = StyleSheet.create({
    hearticon: {
       paddingBottom: 10,
       paddingRight: 15,
-      color:Colors.light_grey
    },
    TextViewoff: {
       flexDirection: 'column',

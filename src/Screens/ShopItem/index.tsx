@@ -1,26 +1,46 @@
-import { NavigationProp, ParamListBase, useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { FlatList, ImageBackground, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { NavigationProp, ParamListBase, RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, ImageBackground, ScrollView, StatusBar, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/EvilIcons';
 import Iconadd from 'react-native-vector-icons/Ionicons';
 import HeaderLine from '../../Components/HeaderLine';
 import Colors from '../../Constant/Colors';
-import Images from '../../Constant/Images';
 import Styles from './Styles';
+import { databases } from '../../db/AppwriteDB';
+import { Query } from 'appwrite';
+import DBkeys from '../../Constant/DBkeys';
+import FavouriteLoc from '../FavouriteLoc';
 
-const shopItems: ShopItemType[] = [
-  { id: '1', name: 'Ice Cafe Latte', type: 'Iced Coffee', price: '₹250.00', image: Images.Ice_cafe },
-  { id: '2', name: 'Caramel Frappuccino', type: 'Iced Coffee', price: '₹320.00', image: Images.caramel },
-  { id: '3', name: 'Pumpkin Pie Coffee', type: 'Iced Coffee', price: '₹330.00', image: Images.Pumpkin_pie },
-  { id: '4', name: 'Ice Mocha', type: 'Iced Coffee', price: '₹290.00', image: Images.Ice_Mocha },
-  { id: '5', name: 'Ice Cafe Latte', type: 'Iced Coffee', price: '₹250.00', image: Images.Ice_cafe },
-  { id: '6', name: 'Pumpkin Pie Coffee', type: 'Iced Coffee', price: '₹330.00', image: Images.Pumpkin_pie },
-];
+
+
+
+const categoriesStyles: { [key in Category]: any } = {
+  All: Styles.itemCat1,
+  'Special Offers': Styles.itemCat2,
+  Coffee: Styles.itemCat3,
+  Tea: Styles.itemCat4,
+  Cookie: Styles.itemCat5,
+};
+
+
+const categoryMapping: { [key in Category]: string } = {
+  All: 'All',
+  'Special Offers': 'Special_Offers',
+  Coffee: 'Coffee',
+  Tea: 'Tea',
+  Cookie: 'Cookie'
+};
 
 const ShopItem = () => {
   const navigation: NavigationProp<ParamListBase> = useNavigation();
-  const [selectedCategory, setSelectedCategory] = useState('Special Offers');
+  const route: RouteProp<{ params: { shopId: string } }, 'params'> = useRoute();
+  const { shopId } = route.params;
+
+  const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategories, setSelectedCategories] = useState<Category>('All');
+  console.log("shopItems", shopItems, "hshhshshhs");
 
   useFocusEffect(
     React.useCallback(() => {
@@ -29,16 +49,79 @@ const ShopItem = () => {
     }, [])
   );
 
+  useEffect(() => {
+    const fetchShopItems = async () => {
+      setIsLoading(true);
+      try {
+        console.log("shopId:", shopId, "Categories:", selectedCategories);
 
-  const handleCategorySelection = (category: string) => {
-    setSelectedCategory(category);
+        const queryFilters = [Query.equal('shopsCaffine', shopId)];
+        const categoryValue = categoryMapping[selectedCategories];
+
+        if (categoryValue !== 'All') {
+          queryFilters.push(Query.equal('categories', categoryValue));
+        }
+
+        const itemsData = await databases.listDocuments(
+          DBkeys.Database_id,
+          DBkeys.shopitemColl_id,
+          queryFilters
+        );
+
+        const formattedItems = itemsData.documents.map((item: any) => ({
+          id: item.$id,
+          shopId: item.shopId,
+          name: item.name,
+          type: item.type,
+          price: item.price,
+          image: item.image,
+          favourite: item.favourite
+        }));
+
+        setShopItems(formattedItems);
+      } catch (error) {
+        console.error("Error fetching shop items:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchShopItems();
+  }, [shopId, selectedCategories]);
+
+  const handleCategoriesSelection = (categories: Category) => {
+    setSelectedCategories(categories);
+  };
+  const toggleFavourite = async (itemId: string, currentFavouriteStatus: boolean) => {
+    try {
+
+      await databases.updateDocument(
+        DBkeys.Database_id,
+        DBkeys.shopitemColl_id,
+        itemId,
+        { favourite: !currentFavouriteStatus }
+      );
+
+      setShopItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, favourite: !currentFavouriteStatus } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error updating favourite status:", error);
+    }
   };
 
   const renderItem = ({ item }: { item: ShopItemType }) => (
     <TouchableOpacity style={Styles.firstitem} onPress={() => navigation.navigate("Detail")}>
-      <ImageBackground source={item.image} resizeMode="stretch" style={Styles.bgimage}>
-        <TouchableOpacity>
-          <Icon2 name="heart" color={Colors.light_grey} size={20} style={Styles.hearticon} />
+      <ImageBackground source={{ uri: item.image }} resizeMode="stretch" style={Styles.bgimage}>
+        <TouchableOpacity onPress={() => toggleFavourite(item.id, item.favourite)}>
+          <Icon2
+            name="heart"
+            color={item.favourite ? Colors.redHeart : Colors.light_grey}
+            size={20}
+            style={Styles.hearticon}
+          />
         </TouchableOpacity>
       </ImageBackground>
       <View style={Styles.TextViewoff}>
@@ -55,76 +138,57 @@ const ShopItem = () => {
   );
 
   return (
-
-
     <View style={Styles.mainContainer}>
+
       <View style={Styles.container}>
-        <HeaderLine isMultiple={true} title="Home" isBack={false} />
+        <HeaderLine isMultiple={true} title="Shop Items" isBack={false} />
         <View style={Styles.LocContainer}>
           <View style={Styles.lockm}>
             <Icon1 name="location" size={20} style={Styles.iconloc1} />
             <Text style={Styles.locText}>Location</Text>
           </View>
-          <Text style={Styles.cityText}>Chennai, TN.</Text>
+          <Text style={Styles.cityText}>Islamabad, Pak.</Text>
         </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <View style={[Styles.DiffitemMain, { flexDirection: 'row' }]}>
-            <TouchableOpacity
-              style={[
-                Styles.itemCat1,
-                { backgroundColor: selectedCategory === 'All' ? Colors.primary : Colors.box_background },
-              ]}
-              onPress={() => handleCategorySelection('All')}>
-              <Text style={{ color: selectedCategory === 'All' ? Colors.White : Colors.dark_grey }}>All</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                Styles.itemCat2,
-                { backgroundColor: selectedCategory === 'Special Offers' ? Colors.primary : Colors.box_background },
-              ]}
-              onPress={() => handleCategorySelection('Special Offers')}>
-              <Text style={{ color: selectedCategory === 'Special Offers' ? Colors.White : Colors.dark_grey }}>Special Offers</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                Styles.itemCat3,
-                { backgroundColor: selectedCategory === 'Coffee' ? Colors.primary : Colors.box_background },
-              ]}
-              onPress={() => handleCategorySelection('Coffee')}>
-              <Text style={{ color: selectedCategory === 'Coffee' ? Colors.White : Colors.dark_grey }}>Coffee</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                Styles.itemCat4,
-                { backgroundColor: selectedCategory === 'Tea' ? Colors.primary : Colors.box_background },
-              ]}
-              onPress={() => handleCategorySelection('Tea')}>
-              <Text style={{ color: selectedCategory === 'Tea' ? Colors.White : Colors.dark_grey }}>Tea</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                Styles.itemCat5,
-                { backgroundColor: selectedCategory === 'Cookie' ? Colors.primary : Colors.box_background },
-              ]}
-              onPress={() => handleCategorySelection('Cookie')}>
-              <Text style={{ color: selectedCategory === 'Cookie' ? Colors.White : Colors.dark_grey }}>Cookie</Text>
-            </TouchableOpacity>
+            {(['All', 'Special Offers', 'Coffee', 'Tea', 'Cookie'] as Category[]).map((categories) => (
+              <TouchableOpacity
+                key={categories}
+                style={[
+                  categoriesStyles[categories],
+                  { backgroundColor: selectedCategories === categories ? Colors.primary : Colors.box_background },
+                ]}
+                onPress={() => handleCategoriesSelection(categories)}
+              >
+                <Text style={{ color: selectedCategories === categories ? Colors.White : Colors.dark_grey }}>
+                  {categories}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </ScrollView>
       </View>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
+      ) : (
+        <View style={Styles.itemOffC}>
 
-      <View style={Styles.itemOffC}>
-        <FlatList
-          data={shopItems}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+          {shopItems.length === 0 ? (
+            <Text style={{ textAlign: 'center', color: Colors.dark_grey, marginTop: 20 }}>No data available</Text>
+          ) : (
+            <FlatList
+              data={shopItems}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id}
+              numColumns={2}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
+
+        </View>
+      )}
     </View>
-
   );
 };
 

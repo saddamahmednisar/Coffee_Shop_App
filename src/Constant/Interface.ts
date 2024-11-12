@@ -12,6 +12,7 @@ type ShopItemType = {
     type: string;
     price: string;
     image: any; 
+    favourite: boolean
   };
   
   type TouchableProps = {
@@ -30,6 +31,7 @@ type CartItem = {
   price: number;
   quantity: number;
   image: any; 
+  
 };
 
 type BottomTabParamList = {
@@ -40,3 +42,4 @@ type BottomTabParamList = {
   Account: { screen?: string };
 };
 
+type Category = 'All' | 'Special Offers' | 'Coffee' | 'Tea' | 'Cookie';

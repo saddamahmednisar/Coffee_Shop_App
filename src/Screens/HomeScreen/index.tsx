@@ -10,6 +10,7 @@ import Colors from '../../Constant/Colors';
 import Styles from './Styles';
 import { databases } from '../../db/AppwriteDB';
 import Images from '../../Constant/Images';
+import DBkeys from '../../Constant/DBkeys';
 
 type Shop = {
     id: number;
@@ -75,8 +76,8 @@ const HomeScreen = () => {
         );
 
         try {
-            const databaseId = '672b42b6002033261bc2';
-            const collectionId = '672b42d9002c372eab32';
+            const databaseId = DBkeys.Database_id;
+            const collectionId = DBkeys.shopcaffineColl_id;
 
             await databases.updateDocument(databaseId, collectionId, shopId.toString(), {
                 favourite: newFavouriteStatus,
@@ -103,37 +104,41 @@ const HomeScreen = () => {
         })
         : shops;
 
-    const renderShopItem = ({ item }: { item: Shop }) => {
-        return (
-            <View style={Styles.sub2coffCont}>
-                <TouchableOpacity activeOpacity={0.7} style={Styles.loc1} onPress={() => navigation.navigate("tab")}>
-                    <View style={Styles.loc1img}>
-                        <Image source={{ uri: item.image }} style={Styles.imageAres} />
-                    </View>
-                    <View style={Styles.loc1TextC}>
-                        <View style={Styles.loc1TC1}>
-                            <Text style={Styles.Shop1T}>{item.name}</Text>
-                            <View style={Styles.lockm}>
-                                <Icon1 name="location" size={15} style={Styles.iconloc1} />
-                                <Text style={Styles.kmText}>{item.distance}</Text>
+        const renderShopItem = ({ item }: { item: Shop }) => {
+            return (
+                <View style={Styles.sub2coffCont}>
+                    <TouchableOpacity 
+                        activeOpacity={0.7} 
+                        style={Styles.loc1} 
+                        onPress={() => navigation.navigate("tab", { screen: "ShopItem", params: { shopId: item.id } })}
+                    >
+                        <View style={Styles.loc1img}>
+                            <Image source={{ uri: item.image }} style={Styles.imageAres} />
+                        </View>
+                        <View style={Styles.loc1TextC}>
+                            <View style={Styles.loc1TC1}>
+                                <Text style={Styles.Shop1T}>{item.name}</Text>
+                                <View style={Styles.lockm}>
+                                    <Icon1 name="location" size={15} style={Styles.iconloc1} />
+                                    <Text style={Styles.kmText}>{item.distance}</Text>
+                                </View>
+                                <StarsLine defaultRating={item.rating} />
                             </View>
-                            <StarsLine defaultRating={item.rating} />
+                            <View style={Styles.loc1TC2}>
+                                <TouchableOpacity onPress={() => toggleHeartColor(item.id)}>
+                                    <Icon2
+                                        name="heart"
+                                        color={item.favourite ? Colors.redHeart : Colors.light_grey}
+                                        size={20}
+                                        style={Styles.icon2heart}
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <View style={Styles.loc1TC2}>
-                            <TouchableOpacity onPress={() => toggleHeartColor(item.id)}>
-                                <Icon2
-                                    name="heart"
-                                    color={item.favourite ? Colors.redHeart : Colors.light_grey}
-                                    size={20}
-                                    style={Styles.icon2heart}
-                                />
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </TouchableOpacity>
-            </View>
-        );
-    };
+                    </TouchableOpacity>
+                </View>
+            );
+        };
 
     return (
         <View style={Styles.container}>
