@@ -126,7 +126,7 @@ const Styles = StyleSheet.create({
       marginVertical: 5
    },
    firstitem: {
-      width:"48%",
+      width: "48%",
       backgroundColor: Colors.White,
       borderRadius: 10,
       shadowOffset: {
@@ -145,7 +145,7 @@ const Styles = StyleSheet.create({
       height: 140,
       justifyContent: 'flex-end',
       alignItems: 'flex-end',
-   
+
       overflow: 'hidden'
    },
    hearticon: {
@@ -169,7 +169,14 @@ const Styles = StyleSheet.create({
       fontSize: 18,
       color: Colors.primary,
       marginTop: 4
+   },
+   cart_ic_adj: {
+      width: 32,
+      height: 32,
+      alignItems: 'center',
+      justifyContent: 'center'
    }
 });
+
 
 export default Styles;

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, ImageBackground, ScrollView, StatusBar, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Entypo';
 import Icon1 from 'react-native-vector-icons/EvilIcons';
+import Iconmin from 'react-native-vector-icons/AntDesign';
 import Iconadd from 'react-native-vector-icons/Ionicons';
 import HeaderLine from '../../Components/HeaderLine';
 import Colors from '../../Constant/Colors';
@@ -10,6 +11,7 @@ import Styles from './Styles';
 import { databases } from '../../db/AppwriteDB';
 import { Query } from 'appwrite';
 import DBkeys from '../../Constant/DBkeys';
+
 
 const categoriesStyles: { [key in Category]: any } = {
   All: Styles.itemCat1,
@@ -29,13 +31,15 @@ const categoryMapping: { [key in Category]: string } = {
 
 const ShopItem = () => {
   const navigation: NavigationProp<ParamListBase> = useNavigation();
-  const route: RouteProp<{ params: { shopId: string } }, 'params'> = useRoute();
+  const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
   const { shopId } = route.params;
 
   const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<Category>('All');
-   const isFocus = useIsFocused();
+  const [addedItems, setAddedItems] = useState<{ [key: string]: boolean }>({});
+
+  const isFocus = useIsFocused();
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBackgroundColor(Colors.background);
@@ -60,11 +64,12 @@ const ShopItem = () => {
           queryFilters
         );
 
-        const formattedItems = itemsData.documents
+        const formattedItems: ShopItemType[] = itemsData.documents
           .map((item: any) => ({
             id: item.$id,
             shopId: item.shopId,
             name: item.name,
+            description: item.description,
             type: item.type,
             price: item.price,
             image: item.image,
@@ -81,7 +86,7 @@ const ShopItem = () => {
     };
 
     fetchShopItems();
-  }, [shopId, selectedCategories,isFocus]);
+  }, [shopId, selectedCategories, isFocus]);
 
   const handleCategoriesSelection = (categories: Category) => {
     setSelectedCategories(categories);
@@ -99,19 +104,27 @@ const ShopItem = () => {
       setShopItems((prevItems) =>
         prevItems
           .map((item) =>
-          
             item.id === itemId ? { ...item, favourite: !currentFavouriteStatus } : item
           )
-          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0)) 
-          
+          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0))
       );
     } catch (error) {
       console.error("Error updating favourite status:", error);
     }
   };
 
+  const toggleAddRemove = (itemId: string) => {
+    setAddedItems((prevAddedItems) => ({
+      ...prevAddedItems,
+      [itemId]: !prevAddedItems[itemId]
+    }));
+  };
+
   const renderItem = ({ item }: { item: ShopItemType }) => (
-    <TouchableOpacity style={Styles.firstitem} onPress={() => navigation.navigate("Detail")}>
+    <TouchableOpacity 
+      style={Styles.firstitem} 
+      onPress={() => navigation.navigate("Detail", {item})}
+    >
       <ImageBackground source={{ uri: item.image }} resizeMode="stretch" style={Styles.bgimage}>
         <TouchableOpacity onPress={() => toggleFavourite(item.id, item.favourite)}>
           <Icon2
@@ -127,8 +140,14 @@ const ShopItem = () => {
         <Text style={Styles.typeText}>{item.type}</Text>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text style={Styles.priceText}>{item.price}</Text>
-          <TouchableOpacity>
-            <Iconadd name="add-circle" size={32} color={Colors.secondary} />
+          <TouchableOpacity onPress={() => toggleAddRemove(item.id)}>
+            <View style={Styles.cart_ic_adj}>
+              {addedItems[item.id] ? (
+                <Iconmin name="minuscircle" size={26} color={Colors.primary} />
+              ) : (
+                <Iconadd name="add-circle" size={32} color={Colors.secondary} />
+              )}
+            </View>
           </TouchableOpacity>
         </View>
       </View>

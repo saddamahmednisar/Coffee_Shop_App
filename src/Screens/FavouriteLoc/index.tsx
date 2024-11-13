@@ -21,7 +21,7 @@ interface Shop {
 
 const FavouriteLoc = () => {
     const [favoriteShops, setFavoriteShops] = useState<Shop[]>([]);
-    const [isLoading, setIsLoading] = useState(false); // Loading state
+    const [isLoading, setIsLoading] = useState(false); 
     const isFocus = useIsFocused();
 
     useFocusEffect(
@@ -114,7 +114,7 @@ const FavouriteLoc = () => {
                 <View style={Styles.sub2TextCont}>
                     <Text style={Styles.sub2Text}>Favourite Coffresh Shops:</Text>
                 </View>
-                {isLoading ? ( // Show loading indicator if data is being fetched
+                {isLoading ? ( 
                     <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
                 ) : (
                     <FlatList

@@ -7,14 +7,15 @@ interface Shop {
 }
 
 type ShopItemType = {
-    id: string;
-    name: string;
-    type: string;
-    price: string;
-    image: any; 
-    favourite: boolean
-  };
-  
+  id: string;
+  shopId: string;
+  name: string;
+  description: string | null;
+  type: string;
+  price: string;
+  image: string;
+  favourite: boolean;
+};
   type TouchableProps = {
     title: string;
     height?: number;
@@ -43,3 +44,13 @@ type BottomTabParamList = {
 };
 
 type Category = 'All' | 'Special Offers' | 'Coffee' | 'Tea' | 'Cookie';
+
+
+type RouteParams = {
+  shopId: string;
+  image: string;
+  name: string;
+  description: string | null;
+  price: string;
+  favourite: boolean;
+};

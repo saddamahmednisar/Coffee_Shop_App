@@ -52,7 +52,7 @@ const Styles = StyleSheet.create({
         fontSize: 20,
         color: Colors.Mat_black
     },
-    paraT: {
+    description: {
         fontFamily: Fonts.Regular,
         fontSize: 12,
         color: Colors.dark_grey
@@ -143,12 +143,13 @@ const Styles = StyleSheet.create({
     },
     priceContainer: {
         height: "100%",
-        width: 80,
-        alignItems: 'flex-end'
+        width: "50%",
+        alignItems: 'flex-end',
+      
     },
     priceText: {
         fontFamily: Fonts.Regular,
-        fontSize: 16,
+        fontSize: 14,
         color: Colors.black
     },
     priceAmount: {
