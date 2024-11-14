@@ -11,7 +11,21 @@ import Styles from './Styles';
 import { databases } from '../../db/AppwriteDB';
 import { Query } from 'appwrite';
 import DBkeys from '../../Constant/DBkeys';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem, removeItem } from '../../Redux/slices/cartSlice';
 
+type Category = 'All' | 'Special Offers' | 'Coffee' | 'Tea' | 'Cookie';
+
+interface ShopItemType {
+  id: string;
+  shopId: string;
+  name: string;
+  description: string;
+  type: string;
+  price: string;
+  image: string;
+  favourite: boolean;
+}
 
 const categoriesStyles: { [key in Category]: any } = {
   All: Styles.itemCat1,
@@ -26,20 +40,23 @@ const categoryMapping: { [key in Category]: string } = {
   'Special Offers': 'Special_Offers',
   Coffee: 'Coffee',
   Tea: 'Tea',
-  Cookie: 'Cookie'
+  Cookie: 'Cookie',
 };
 
 const ShopItem = () => {
-  const navigation: NavigationProp<ParamListBase> = useNavigation();
-  const route = useRoute<RouteProp<{ params: RouteParams }, 'params'>>();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const dispatch = useDispatch();
+
+  const route = useRoute<RouteProp<{ params: { shopId: string } }, 'params'>>();
   const { shopId } = route.params;
 
   const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<Category>('All');
-  const [addedItems, setAddedItems] = useState<{ [key: string]: boolean }>({});
+  const cartItems = useSelector((state: any) => state.cart.items); // Get cart items from Redux
 
-  const isFocus = useIsFocused();
+
+   const isFocus =useIsFocused();
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBackgroundColor(Colors.background);
@@ -75,7 +92,7 @@ const ShopItem = () => {
             image: item.image,
             favourite: item.favourite,
           }))
-          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0));
+          .sort((a, b) => (b.favourite ? 1 : 0) - (a.favourite ? 1 : 0));
 
         setShopItems(formattedItems);
       } catch (error) {
@@ -88,8 +105,8 @@ const ShopItem = () => {
     fetchShopItems();
   }, [shopId, selectedCategories, isFocus]);
 
-  const handleCategoriesSelection = (categories: Category) => {
-    setSelectedCategories(categories);
+  const handleCategoriesSelection = (category: Category) => {
+    setSelectedCategories(category);
   };
 
   const toggleFavourite = async (itemId: string, currentFavouriteStatus: boolean) => {
@@ -106,53 +123,60 @@ const ShopItem = () => {
           .map((item) =>
             item.id === itemId ? { ...item, favourite: !currentFavouriteStatus } : item
           )
-          .sort((a, b) => (b.favourite === true ? 1 : 0) - (a.favourite === true ? 1 : 0))
+          .sort((a, b) => (b.favourite ? 1 : 0) - (a.favourite ? 1 : 0))
       );
     } catch (error) {
       console.error("Error updating favourite status:", error);
     }
   };
 
-  const toggleAddRemove = (itemId: string) => {
-    setAddedItems((prevAddedItems) => ({
-      ...prevAddedItems,
-      [itemId]: !prevAddedItems[itemId]
-    }));
+  const addToCart = (item: ShopItemType) => {
+    const itemInCart = cartItems.find((cartItem: any) => cartItem.id === item.id);
+
+    if (itemInCart && itemInCart.quantity > 0) {
+      dispatch(removeItem(item));
+    } else {
+      dispatch(addItem(item));
+    }
   };
 
-  const renderItem = ({ item }: { item: ShopItemType }) => (
-    <TouchableOpacity 
-      style={Styles.firstitem} 
-      onPress={() => navigation.navigate("Detail", {item})}
-    >
-      <ImageBackground source={{ uri: item.image }} resizeMode="stretch" style={Styles.bgimage}>
-        <TouchableOpacity onPress={() => toggleFavourite(item.id, item.favourite)}>
-          <Icon2
-            name="heart"
-            color={item.favourite ? Colors.redHeart : Colors.light_grey}
-            size={20}
-            style={Styles.hearticon}
-          />
-        </TouchableOpacity>
-      </ImageBackground>
-      <View style={Styles.TextViewoff}>
-        <Text style={Styles.nameText}>{item.name}</Text>
-        <Text style={Styles.typeText}>{item.type}</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={Styles.priceText}>{item.price}</Text>
-          <TouchableOpacity onPress={() => toggleAddRemove(item.id)}>
-            <View style={Styles.cart_ic_adj}>
-              {addedItems[item.id] ? (
-                <Iconmin name="minuscircle" size={26} color={Colors.primary} />
-              ) : (
-                <Iconadd name="add-circle" size={32} color={Colors.secondary} />
-              )}
-            </View>
+  const renderItem = ({ item }: { item: ShopItemType }) => {
+    const itemInCart = cartItems.find((cartItem: any) => cartItem.id === item.id);
+
+    return (
+      <TouchableOpacity 
+        style={Styles.firstitem} 
+        onPress={() => navigation.navigate("Detail", { item })}
+      >
+        <ImageBackground source={{ uri: item.image }} resizeMode="stretch" style={Styles.bgimage}>
+          <TouchableOpacity onPress={() => toggleFavourite(item.id, item.favourite)}>
+            <Icon2
+              name="heart"
+              color={item.favourite ? Colors.redHeart : Colors.light_grey}
+              size={20}
+              style={Styles.hearticon}
+            />
           </TouchableOpacity>
+        </ImageBackground>
+        <View style={Styles.TextViewoff}>
+          <Text style={Styles.nameText}>{item.name}</Text>
+          <Text style={Styles.typeText}>{item.type}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={Styles.priceText}>{item.price}</Text>
+            <TouchableOpacity onPress={() => addToCart(item)}>
+              <View style={Styles.cart_ic_adj}>
+                {itemInCart && itemInCart.quantity > 0 ? (
+                  <Iconmin name="minuscircle" size={26} color={Colors.primary} />
+                ) : (
+                  <Iconadd name="add-circle" size={32} color={Colors.secondary} />
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={Styles.mainContainer}>
@@ -167,17 +191,17 @@ const ShopItem = () => {
         </View>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
           <View style={[Styles.DiffitemMain, { flexDirection: 'row' }]}>
-            {(['All', 'Special Offers', 'Coffee', 'Tea', 'Cookie'] as Category[]).map((categories) => (
+            {(['All', 'Special Offers', 'Coffee', 'Tea', 'Cookie'] as Category[]).map((category) => (
               <TouchableOpacity
-                key={categories}
+                key={category}
                 style={[
-                  categoriesStyles[categories],
-                  { backgroundColor: selectedCategories === categories ? Colors.primary : Colors.box_background },
+                  categoriesStyles[category],
+                  { backgroundColor: selectedCategories === category ? Colors.primary : Colors.box_background },
                 ]}
-                onPress={() => handleCategoriesSelection(categories)}
+                onPress={() => handleCategoriesSelection(category)}
               >
-                <Text style={{ color: selectedCategories === categories ? Colors.White : Colors.dark_grey }}>
-                  {categories}
+                <Text style={{ color: selectedCategories === category ? Colors.White : Colors.dark_grey }}>
+                  {category}
                 </Text>
               </TouchableOpacity>
             ))}

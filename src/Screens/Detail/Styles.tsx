@@ -126,7 +126,7 @@ const Styles = StyleSheet.create({
         marginTop: 15
     },
     cartContainer: {
-        height: 46,
+        height: "100%",
         width: 132,
         backgroundColor: Colors.Cart_bg,
         borderRadius: 27.5,
@@ -160,7 +160,8 @@ const Styles = StyleSheet.create({
     buttoncartmain: {
         flex: 0.3,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop:10
     },
     buttoncart: {
         height: 48,

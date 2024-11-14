@@ -7,11 +7,18 @@ import HeaderLine from '../../Components/HeaderLine';
 import Touchable from '../../Components/Touchable';
 import Colors from '../../Constant/Colors';
 import Styles from './Styles';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../Redux/store'; 
 
 const Delivery_Payment = () => {
   const [selectedOption, setSelectedOption] = useState('delivery');
 
-  const handleSelection = (option: any) => {
+
+  const subtotal = useSelector((state: RootState) => state.cart.subtotal);
+  const tax = useSelector((state: RootState) => state.cart.tax);
+  const total = useSelector((state: RootState) => state.cart.total);
+
+  const handleSelection = (option: React.SetStateAction<string>) => {
     setSelectedOption(option);
   };
 
@@ -29,7 +36,9 @@ const Delivery_Payment = () => {
               },
             ]}
             onPress={() => handleSelection('selfPickUp')}>
-            <Text style={{color: selectedOption === 'selfPickUp' ? Colors.primary : Colors.Mat_black,}}>Self Pick-up</Text>
+            <Text style={{ color: selectedOption === 'selfPickUp' ? Colors.primary : Colors.Mat_black }}>
+              Self Pick-up
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -40,11 +49,7 @@ const Delivery_Payment = () => {
               },
             ]}
             onPress={() => handleSelection('delivery')}>
-            <Text
-              style={{
-                color: selectedOption === 'delivery' ? Colors.primary : Colors.Mat_black,
-              }}
-            >
+            <Text style={{ color: selectedOption === 'delivery' ? Colors.primary : Colors.Mat_black }}>
               Delivery
             </Text>
           </TouchableOpacity>
@@ -121,16 +126,16 @@ const Delivery_Payment = () => {
         <View style={Styles.calTextContainer}>
           <View style={Styles.cal1cont}>
             <Text style={Styles.subtotalText}>Subtotal:</Text>
-            <Text style={Styles.subtotalAmount}>₹980.00</Text>
+            <Text style={Styles.subtotalAmount}>₹{(subtotal ?? 0).toFixed(2)}</Text>
           </View>
           <View style={Styles.cal2cont}>
             <Text style={Styles.taxText}>Tax & Fee:</Text>
-            <Text style={Styles.taxAmount}>₹40.00</Text>
+            <Text style={Styles.taxAmount}>₹{(tax ?? 0).toFixed(2)}</Text>
           </View>
           <View style={Styles.line} />
           <View style={Styles.totalmain}>
             <Text style={Styles.totalText}>Total:</Text>
-            <Text style={Styles.totalAmount}>₹1,020.00</Text>
+            <Text style={Styles.totalAmount}>₹{(total ?? 0).toFixed(2)}</Text>
           </View>
         </View>
         <View style={Styles.touchablecont}>
