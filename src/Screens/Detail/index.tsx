@@ -10,7 +10,7 @@ import Styles from './Styles';
 import Images from '../../Constant/Images';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../Redux/store';
-import { addItem, updateQuantity } from '../../Redux/slices/cartSlice';
+import { addItem, updateQuantity, removeItem } from '../../Redux/slices/cartSlice';
 
 interface RouteParams {
     item: {
@@ -56,6 +56,10 @@ const Detail = () => {
         if (newQuantity > 0) {
             setQuantity(newQuantity);
             dispatch(updateQuantity({ id: item.id, quantity: newQuantity }));
+        } else {
+            setQuantity(1);
+            dispatch(removeItem({ id: item.id }));
+           
         }
     };
 

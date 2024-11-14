@@ -25,7 +25,7 @@ export const store = configureStore({
 
 export const persistor = persistStore(store);
 
-// TypeScript: Define RootState type
+
 export type RootState = ReturnType<typeof rootReducer>;
 
 

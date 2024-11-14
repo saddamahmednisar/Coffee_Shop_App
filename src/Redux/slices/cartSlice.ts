@@ -78,8 +78,15 @@ const cartSlice = createSlice({
       state.tax = tax;
       state.total = total;
     },
+    removeItemCompletely: (state, action: PayloadAction<{ id: string }>) => {
+      state.items = state.items.filter(item => item.id !== action.payload.id);
+      const { subtotal, tax, total } = calculateTotals(state.items);
+      state.subtotal = subtotal;
+      state.tax = tax;
+      state.total = total;
+    },
   },
 });
 
-export const { addItem, removeItem, updateQuantity } = cartSlice.actions;
+export const { addItem, removeItem, updateQuantity, removeItemCompletely } = cartSlice.actions;
 export default cartSlice.reducer;

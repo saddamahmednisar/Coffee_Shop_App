@@ -40,7 +40,7 @@ const HeaderLine: React.FC<HeaderLineProps> = ({ isMultiple, title, isBack }) =>
                     <TouchableOpacity activeOpacity={0.7}>
                         <Icon2 name="heart" color={Colors.light_grey} size={18} onPress={() => navigation.navigate('FavouriteLoc', { screen: 'FavouriteLocations' })} />
                     </TouchableOpacity>
-                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate("MyCart")}>
+                    <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate("CartScreen")}>
                         <Icon1 name="shopping-basket" size={18} />
                     </TouchableOpacity>
                 </View>

@@ -12,7 +12,7 @@ import { databases } from '../../db/AppwriteDB';
 import { Query } from 'appwrite';
 import DBkeys from '../../Constant/DBkeys';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem, removeItem } from '../../Redux/slices/cartSlice';
+import { addItem, removeItemCompletely } from '../../Redux/slices/cartSlice';
 
 type Category = 'All' | 'Special Offers' | 'Coffee' | 'Tea' | 'Cookie';
 
@@ -55,8 +55,7 @@ const ShopItem = () => {
   const [selectedCategories, setSelectedCategories] = useState<Category>('All');
   const cartItems = useSelector((state: any) => state.cart.items); // Get cart items from Redux
 
-
-   const isFocus =useIsFocused();
+  const isFocus = useIsFocused();
   useFocusEffect(
     React.useCallback(() => {
       StatusBar.setBackgroundColor(Colors.background);
@@ -133,10 +132,11 @@ const ShopItem = () => {
   const addToCart = (item: ShopItemType) => {
     const itemInCart = cartItems.find((cartItem: any) => cartItem.id === item.id);
 
-    if (itemInCart && itemInCart.quantity > 0) {
-      dispatch(removeItem(item));
+    if (itemInCart) {
+      
+      dispatch(removeItemCompletely({ id: item.id }));
     } else {
-      dispatch(addItem(item));
+      dispatch(addItem({ ...item, quantity: 1, selectedSize: 'Medium' })); 
     }
   };
 
@@ -165,7 +165,7 @@ const ShopItem = () => {
             <Text style={Styles.priceText}>{item.price}</Text>
             <TouchableOpacity onPress={() => addToCart(item)}>
               <View style={Styles.cart_ic_adj}>
-                {itemInCart && itemInCart.quantity > 0 ? (
+                {itemInCart ? (
                   <Iconmin name="minuscircle" size={26} color={Colors.primary} />
                 ) : (
                   <Iconadd name="add-circle" size={32} color={Colors.secondary} />
