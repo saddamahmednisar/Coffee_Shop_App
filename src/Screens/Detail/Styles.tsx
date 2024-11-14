@@ -165,7 +165,7 @@ const Styles = StyleSheet.create({
     },
     buttoncart: {
         height: 48,
-        width: 386,
+        width: "92%",
         backgroundColor: Colors.primary,
         borderRadius: 24,
         justifyContent: 'center',
