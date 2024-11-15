@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useRoute, RouteProp } from '@react-navigation/native';
-import { Alert, Image, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import Iconmin from 'react-native-vector-icons/AntDesign';
 import Iconadd from 'react-native-vector-icons/Ionicons';
 import IconHeart from 'react-native-vector-icons/Entypo';
+import Toast from 'react-native-toast-message'; 
 import HeaderLine from '../../Components/HeaderLine';
 import Colors from '../../Constant/Colors';
 import Styles from './Styles';
@@ -37,11 +38,14 @@ const Detail = () => {
     };
 
     const handleAddToCart = () => {
-        if (cartItem) {
-            Alert.alert("Already Added", "This item is already in your cart.");
-        } else {
+        if (!cartItem) {
             dispatch(addItem({ ...item, quantity, selectedSize }));
-            Alert.alert("Item Added", "This item has been added to your cart.");
+            
+            Toast.show({
+                type: 'success',
+                text1: 'Item Added',
+                text2: `${item.name} has been added to your cart.`,
+            });
         }
     };
 
@@ -59,7 +63,6 @@ const Detail = () => {
         } else {
             setQuantity(1);
             dispatch(removeItem({ id: item.id }));
-           
         }
     };
 
@@ -127,16 +130,27 @@ const Detail = () => {
                         </View>
                         <View style={Styles.priceContainer}>
                             <Text style={Styles.priceText}>Price</Text>
-                            <Text style={Styles.priceAmount}>{item?.price}</Text>
+                            <Text style={Styles.priceAmount}>Rs {item?.price}</Text>
                         </View>
                     </View>
                     <View style={Styles.buttoncartmain}>
-                        <TouchableOpacity activeOpacity={0.7} style={Styles.buttoncart} onPress={handleAddToCart}>
-                            <Text style={Styles.buttoncartText}>ADD TO CART</Text>
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            style={[
+                                Styles.buttoncart,
+                                { backgroundColor: cartItem ? Colors.light_grey : Colors.primary },
+                            ]}
+                            onPress={handleAddToCart}
+                            disabled={!!cartItem}
+                        >
+                            <Text style={Styles.buttoncartText}>
+                                {cartItem ? "Already Added in Cart" : "ADD TO CART"}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
+            <Toast /> 
         </>
     );
 };

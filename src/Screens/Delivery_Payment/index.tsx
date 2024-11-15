@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import Iconadr from 'react-native-vector-icons/Entypo';
@@ -8,15 +8,24 @@ import Touchable from '../../Components/Touchable';
 import Colors from '../../Constant/Colors';
 import Styles from './Styles';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../Redux/store'; 
+import { RootState } from '../../Redux/store';
 
 const Delivery_Payment = () => {
   const [selectedOption, setSelectedOption] = useState('delivery');
+  const cartItems = useSelector((state: RootState) => state.cart.items);
+
+  const subtotal = useMemo(() => {
+    return cartItems.reduce((acc, item) => {
+      const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
+      return acc + itemPrice * item.quantity;
+    }, 0);
+  }, [cartItems]);
+
+  const TAX_AMOUNT = 40.00;
 
 
-  const subtotal = useSelector((state: RootState) => state.cart.subtotal);
-  const tax = useSelector((state: RootState) => state.cart.tax);
-  const total = useSelector((state: RootState) => state.cart.total);
+  const tax = subtotal > 0 ? TAX_AMOUNT : 0;
+  const total = subtotal + tax;
 
   const handleSelection = (option: React.SetStateAction<string>) => {
     setSelectedOption(option);
@@ -126,16 +135,16 @@ const Delivery_Payment = () => {
         <View style={Styles.calTextContainer}>
           <View style={Styles.cal1cont}>
             <Text style={Styles.subtotalText}>Subtotal:</Text>
-            <Text style={Styles.subtotalAmount}>₹{(subtotal ?? 0).toFixed(2)}</Text>
+            <Text style={Styles.subtotalAmount}>Rs {subtotal.toFixed(2)}</Text>
           </View>
           <View style={Styles.cal2cont}>
             <Text style={Styles.taxText}>Tax & Fee:</Text>
-            <Text style={Styles.taxAmount}>₹{(tax ?? 0).toFixed(2)}</Text>
+            <Text style={Styles.taxAmount}>Rs {tax.toFixed(2)}</Text>
           </View>
           <View style={Styles.line} />
           <View style={Styles.totalmain}>
             <Text style={Styles.totalText}>Total:</Text>
-            <Text style={Styles.totalAmount}>₹{(total ?? 0).toFixed(2)}</Text>
+            <Text style={Styles.totalAmount}>Rs {total.toFixed(2)}</Text>
           </View>
         </View>
         <View style={Styles.touchablecont}>

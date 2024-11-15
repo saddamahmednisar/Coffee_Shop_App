@@ -91,6 +91,7 @@ const Styles = StyleSheet.create({
     sizeContainer: {
         flex: 0.2,
         marginHorizontal: 14,
+        marginTop:5
 
     },
     sizeText: {

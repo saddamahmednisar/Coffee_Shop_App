@@ -161,7 +161,7 @@ const Styles = StyleSheet.create({
         flex: 0.35,
          justifyContent:'center',
          alignItems:'center',
-         marginTop: 5
+         marginTop: 20
          
     }
 });

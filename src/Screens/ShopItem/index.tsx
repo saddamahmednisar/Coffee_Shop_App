@@ -50,10 +50,13 @@ const ShopItem = () => {
   const route = useRoute<RouteProp<{ params: { shopId: string } }, 'params'>>();
   const { shopId } = route.params;
 
+  console.log(shopId,"heeeloo i am shop id");
+  
+
   const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState<Category>('All');
-  const cartItems = useSelector((state: any) => state.cart.items); // Get cart items from Redux
+  const cartItems = useSelector((state: any) => state.cart.items); 
 
   const isFocus = useIsFocused();
   useFocusEffect(
@@ -162,7 +165,7 @@ const ShopItem = () => {
           <Text style={Styles.nameText}>{item.name}</Text>
           <Text style={Styles.typeText}>{item.type}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={Styles.priceText}>{item.price}</Text>
+            <Text style={Styles.priceText}>Rs {item.price}</Text>
             <TouchableOpacity onPress={() => addToCart(item)}>
               <View style={Styles.cart_ic_adj}>
                 {itemInCart ? (

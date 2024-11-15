@@ -18,18 +18,18 @@ const MyCart = () => {
     const TAX_AMOUNT = 40.00;
 
     const { subtotal, total } = useMemo(() => {
-        const subtotal = cartItems.reduce((acc: number, item: any) => {   
+        const subtotal = cartItems.reduce((acc: number, item: any) => {
             const itemPrice = parseFloat(item.price.replace(/[^0-9.]/g, '')) || 0;
             return acc + itemPrice * item.quantity;
         }, 0);
-        const total = subtotal + TAX_AMOUNT;
+        const total = subtotal > 0 ? subtotal + TAX_AMOUNT : 0; 
         return { subtotal, total };
     }, [cartItems]);
 
     useFocusEffect(
         React.useCallback(() => {
-            StatusBar.setBackgroundColor(Colors.background); 
-            StatusBar.setBarStyle('dark-content'); 
+            StatusBar.setBackgroundColor(Colors.background);
+            StatusBar.setBarStyle('dark-content');
         }, [])
     );
 
@@ -49,7 +49,7 @@ const MyCart = () => {
             <View style={Styles.TextViewoff}>
                 <Text style={Styles.nameText}>{item?.name}</Text>
                 <Text style={Styles.typeText}>{item?.type}</Text>
-                <Text style={Styles.priceText}>₹{item?.price}</Text>
+                <Text style={Styles.priceText}>Rs {item?.price}</Text>
             </View>
             <View style={Styles.cartMainContainer}>
                 <View style={Styles.cartContainer}>
@@ -88,20 +88,20 @@ const MyCart = () => {
                 <View style={Styles.calTextContainer}>
                     <View style={Styles.cal1cont}>
                         <Text style={Styles.subtotalText}>Subtotal:</Text>
-                        <Text style={Styles.subtotalAmount}>₹{subtotal.toFixed(2)}</Text>
+                        <Text style={Styles.subtotalAmount}>Rs {subtotal.toFixed(2)}</Text>
                     </View>
                     <View style={Styles.cal2cont}>
                         <Text style={Styles.taxText}>Tax & Fee:</Text>
-                        <Text style={Styles.taxAmount}>₹{TAX_AMOUNT.toFixed(2)}</Text>
+                        <Text style={Styles.taxAmount}>Rs {subtotal > 0 ? TAX_AMOUNT.toFixed(2) : "0.00"}</Text>
                     </View>
                     <View style={Styles.line} />
                     <View style={Styles.totalmain}>
                         <Text style={Styles.totalText}>Total:</Text>
-                        <Text style={Styles.totalAmount}>₹{total.toFixed(2)}</Text>
+                        <Text style={Styles.totalAmount}>Rs {total.toFixed(2)}</Text>
                     </View>
                 </View>
                 <View style={Styles.touchablecont}>
-                    <Touchable title="CHECKOUT" onPress={() => navigation.navigate("Delivery_Payment")} />
+                    <Touchable title="CHECKOUT" onPress={() => navigation.navigate("Delivery_Payment")} height={45} />
                 </View>
             </View>
         </View>
@@ -109,3 +109,4 @@ const MyCart = () => {
 };
 
 export default MyCart;
+ 

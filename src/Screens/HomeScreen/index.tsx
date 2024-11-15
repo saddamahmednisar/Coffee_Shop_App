@@ -165,7 +165,7 @@ const HomeScreen = () => {
                 <View style={Styles.sub2TextCont}>
                     <Text style={Styles.sub2Text}>Coffee Shops near you</Text>
                 </View>
-                <View style={{ justifyContent: 'center' }}>
+                <View style={{ justifyContent: 'center' , flex: 1}}>
                     {isLoading ? (
                         <ActivityIndicator size="large" color={Colors.primary} style={{ alignSelf: 'center' }} />
                     ) : (
