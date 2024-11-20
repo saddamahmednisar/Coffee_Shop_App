@@ -114,7 +114,7 @@ const Delivery_Payment = () => {
               style={Styles.forwrsdIconCont}
               onPress={() => setIsEditingAddress((prev) => !prev)}
             >
-              <Icon3 name={isEditingAddress ? 'check' : 'righ t'} size={18} color={Colors.light_grey} />
+              <Icon3 name={isEditingAddress ? 'check' : 'edit'} size={18} color={Colors.secondary} />
             </TouchableOpacity>
           </View>
 
@@ -149,7 +149,7 @@ const Delivery_Payment = () => {
               style={Styles.forwrsdIconCont}
               onPress={() => setIsEditingContact((prev) => !prev)}
             >
-              <Icon3 name={isEditingContact ? 'check' : 'right'} size={18} color={Colors.light_grey} />
+              <Icon3 name={isEditingContact ? 'check' : 'edit'} size={18} color={Colors.secondary} />
             </TouchableOpacity>
           </View>
 
@@ -182,7 +182,7 @@ const Delivery_Payment = () => {
               style={Styles.forwrsdIconCont}
               onPress={() => setIsEditingDeliveryTime((prev) => !prev)}
             >
-              <Icon3 name={isEditingDeliveryTime ? 'check' : 'right'} size={18} color={Colors.light_grey} />
+              <Icon3 name={isEditingDeliveryTime ? 'check' : 'edit'} size={18} color={Colors.secondary} />
             </TouchableOpacity>
           </View>
           {/* card Payment Option */}
@@ -213,7 +213,7 @@ const Delivery_Payment = () => {
             <TouchableOpacity
               style={Styles.forwrsdIconCont}
               onPress={() => setIsEditingPaymentOption((prev) => !prev)}>
-              <Icon3 name={isEditingPaymentOption ? 'check' : 'right'} size={18} color={Colors.light_grey} />
+              <Icon3 name={isEditingPaymentOption ? 'check' : 'edit'} size={18} color={Colors.secondary } />
             </TouchableOpacity>
           </View>
 
