@@ -1,4 +1,5 @@
 interface Shop {
+    favourite: any;
     id: string;
     name: string;
     distance: string;

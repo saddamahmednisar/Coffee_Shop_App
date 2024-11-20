@@ -137,6 +137,10 @@ const Styles = StyleSheet.create({
     },
     myEmptyStarStyle: {
         color: Colors.White,
+    },
+    emptyCompText:{
+        alignSelf:"center",
+        fontFamily: Fonts.Medium
     }
 });
 export default Styles;

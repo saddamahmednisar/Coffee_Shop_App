@@ -163,6 +163,10 @@ const Styles = StyleSheet.create({
          alignItems:'center',
          marginTop: 20
          
+    },
+    emptyText:{
+         alignSelf:'center',
+         fontFamily:Fonts.Regular
     }
 });
 export default Styles;

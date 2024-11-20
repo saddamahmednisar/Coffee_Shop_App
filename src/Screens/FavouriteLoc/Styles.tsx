@@ -117,7 +117,8 @@ const Styles = StyleSheet.create({
         color: Colors.White,
     },
     emptyCompText:{
-        
+        alignSelf:"center",
+        fontFamily: Fonts.Medium
     }
 
 

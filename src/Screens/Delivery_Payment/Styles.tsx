@@ -8,15 +8,17 @@ const Styles = StyleSheet.create({
         backgroundColor: Colors.background
     },
     selectingContainermain: {
-        flex: 0.08,
-        width: "100%",
+        height:50,
+        alignItems: 'center', 
+        paddingHorizontal: 14, 
+        paddingVertical: 3,
+        backgroundColor:Colors.background
 
-        justifyContent: 'center',
-        alignItems: 'center'
+
     },
     selectingContainersub: {
         height: "100%",
-        width: "93%",
+        width: "100%",
         backgroundColor: Colors.selfcard,
         flexDirection: 'row',
         justifyContent: 'space-evenly',
@@ -48,92 +50,80 @@ const Styles = StyleSheet.create({
         color: Colors.primary,
         fontSize: 12
     },
-    ///list
-    listContainerMain: {
-        flex: 0.5,
-        width: '100%',
-        alignItems: 'center',
-        marginVertical: 20,
-        backgroundColor: Colors.background
 
-    },
-    listContainersub: {
-        height: '100%',
-        width: "93%",
-        // backgroundColor: 'green',
-        flexDirection: 'column',
-        justifyContent: "space-between"
-
-    },
     FirstCard: {
-        width: "100%",
-        height: '27%',
+        width: "93%",
         backgroundColor: Colors.White,
         flexDirection: 'row',
-        padding: 5  ,
         borderRadius: 4,
-        
+        marginHorizontal: 14,
+        shadowColor: '#0000000',
+        shadowOffset:
+        {
+            width: 0,
+            height: 2
 
-        shadowColor: '#0000000',       
-        shadowOffset: { width: 0, height: 2 }, 
-        shadowOpacity: 0.25,      
-        shadowRadius: 3.84,        
-    
-        elevation: 5, 
-
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        justifyContent:'center',
+        paddingVertical:10
     },
     mainiconCont: {
         width: "18%",
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    iconBox:{
-        height: "60%",
+    iconBox: {
         width: "60%",
         backgroundColor: Colors.signboxes,
         borderRadius: 4,
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    textContainermain: {
-        width: "72%",
-        flexDirection:'column',
-        justifyContent:'center'
+    universalTextmainContainer: {
+        flexDirection: 'column',
+        width: '70%',
+        justifyContent: "center",
+         marginTop: 8
+        
+
     },
-    AddressText:{
-        fontFamily: Fonts.Regular,
+    AddressText: {
+        fontFamily: Fonts.Medium,
         fontSize: 14,
         color: Colors.Mat_black,
-       
+        lineHeight: 16,
     },
-    compAdd:{
-        fontFamily: Fonts.Regular,
-        fontSize: 12,
+    compAdd: {
         color: Colors.dark_grey,
-        marginTop:3
+        backgroundColor: Colors.White,
+        height: 35
     },
+    
     forwrsdIconCont: {
         width: "10%",
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    dottedview:{
-      flex: 0.07,
-      justifyContent:'center',
-      alignItems:"center",
-      marginHorizontal: 14,
-      borderRadius:4,
-      borderWidth: 1,
-      borderColor: Colors.secondary,
-      borderStyle:'dotted'
+    dottedview: {
+        padding:8,
+        justifyContent: 'center',
+        alignItems: "center",
+        marginHorizontal: 14,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: Colors.secondary,
+        borderStyle: 'dotted'
     },
-    PromoText:{
+    PromoText: {
         fontFamily: Fonts.Regular,
         color: Colors.secondary,
         fontSize: 14
     },
     subcont2: {
-        flex: 0.4,
+        flex: 0.35,
         backgroundColor: Colors.White,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
@@ -208,11 +198,16 @@ const Styles = StyleSheet.create({
         fontSize: 18,
         color: Colors.primary
     },
-    touchablecont:{
+    touchablecont: {
         flex: 0.35,
-         justifyContent:'center',
-         alignItems:'center',
-         
-    }
+        justifyContent: 'center',
+        alignItems: 'center',
+
+    },
+    scrollViewContainer: {
+        backgroundColor: Colors.White,
+        flexGrow: 1,
+
+    },
 });
 export default Styles

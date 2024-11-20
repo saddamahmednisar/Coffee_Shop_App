@@ -1,4 +1,4 @@
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { NavigationProp, ParamListBase, useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { FlatList, Image, StatusBar, Text, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native';
 import Icon2 from 'react-native-vector-icons/Entypo';
@@ -17,41 +17,44 @@ interface Shop {
     distance: string;
     image: string; 
     rating: number;
+    favourite: boolean;
 }
 
 const FavouriteLoc = () => {
     const [favoriteShops, setFavoriteShops] = useState<Shop[]>([]);
-    const [isLoading, setIsLoading] = useState(false); 
+    const [isLoading, setIsLoading] = useState(false);
+    const navigation: NavigationProp<ParamListBase> = useNavigation();
     const isFocus = useIsFocused();
 
     useFocusEffect(
         React.useCallback(() => {
-            StatusBar.setBackgroundColor(Colors.background); 
-            StatusBar.setBarStyle('dark-content'); 
+            StatusBar.setBackgroundColor(Colors.background);
+            StatusBar.setBarStyle('dark-content');
         }, [])
     );
 
     const fetchFavoriteShops = async () => {
-        setIsLoading(true); 
+        setIsLoading(true);
         try {
             const response = await databases.listDocuments(
-                DBkeys.Database_id,        
-                DBkeys.shopcaffineColl_id,      
-                [Query.equal('favourite', true)] 
+                DBkeys.Database_id,
+                DBkeys.shopcaffineColl_id,
+                [Query.equal('favourite', true)]
             );
             const shops = response.documents.map((doc: any) => ({
                 id: doc.$id,
                 name: doc.name,
                 distance: doc.distance,
-                image: doc.image, 
+                image: doc.image,
                 rating: doc.rating,
+                favourite: doc.favourite,
             }));
             setFavoriteShops(shops);
         } catch (error) {
             console.error("Error fetching favorite shops:", error);
             Alert.alert("Error", "Failed to load favourite shops.");
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 
@@ -67,19 +70,23 @@ const FavouriteLoc = () => {
                     DBkeys.Database_id,
                     DBkeys.shopcaffineColl_id,
                     shopId,
-                    { favourite: false } 
+                    { favourite: false }
                 );
                 setFavoriteShops((prevShops) => prevShops.filter((item) => item.id !== shopId));
             } catch (error) {
-                console.error("Error updating favrt status:", error);
-                Alert.alert("Error", "Failed update status.");
+                console.error("Error updating favourite status:", error);
+                Alert.alert("Error", "Failed to update status.");
             }
         }
     };
 
     const renderShopItem = ({ item }: { item: Shop }) => (
         <View style={Styles.sub2coffCont}>
-            <View style={Styles.loc1}>
+            <TouchableOpacity
+                activeOpacity={0.7}
+                style={Styles.loc1}
+                onPress={() => navigation.navigate("tab", { screen: "ShopItem", params: { shopId: item.id } })} 
+            >
                 <View style={Styles.loc1img}>
                     <Image source={{ uri: item.image }} style={Styles.imageAres} />
                 </View>
@@ -96,14 +103,14 @@ const FavouriteLoc = () => {
                         <TouchableOpacity onPress={() => toggleHeartColor(item.id)}>
                             <Icon2
                                 name="heart"
-                                color="red" 
+                                color={item.favourite ? Colors.redHeart : Colors.light_grey}
                                 size={20}
                                 style={Styles.icon2heart}
                             />
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         </View>
     );
 
@@ -112,9 +119,9 @@ const FavouriteLoc = () => {
             <HeaderLine isMultiple={true} title="Wish List" isBack={false} />
             <View style={Styles.subContainer2}>
                 <View style={Styles.sub2TextCont}>
-                    <Text style={Styles.sub2Text}>Favourite Coffresh Shops:</Text>
+                    <Text style={Styles.sub2Text}>Favourite Coffee Shops:</Text>
                 </View>
-                {isLoading ? ( 
+                {isLoading ? (
                     <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
                 ) : (
                     <FlatList

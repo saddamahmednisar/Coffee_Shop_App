@@ -48,10 +48,7 @@ const ShopItem = () => {
   const dispatch = useDispatch();
 
   const route = useRoute<RouteProp<{ params: { shopId: string } }, 'params'>>();
-  const { shopId } = route.params;
-
-  console.log(shopId,"heeeloo i am shop id");
-  
+  const { shopId = "672b43ec0032b522f797" } = route.params?? {};
 
   const [shopItems, setShopItems] = useState<ShopItemType[]>([]);
   const [isLoading, setIsLoading] = useState(true);

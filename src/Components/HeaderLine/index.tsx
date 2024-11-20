@@ -59,7 +59,7 @@ export default HeaderLine;
 
 const styles = StyleSheet.create({
     headmaincontainer: {
-        height: 80,
+        height: 70,   
         backgroundColor: Colors.background,
         flexDirection: 'row',
         alignItems: 'center',
