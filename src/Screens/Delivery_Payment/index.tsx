@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Text, TouchableOpacity, View, TextInput } from 'react-native';
+import { Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import Iconadr from 'react-native-vector-icons/Entypo';
 import IconPay from 'react-native-vector-icons/MaterialIcons';
@@ -9,8 +9,9 @@ import Colors from '../../Constant/Colors';
 import Styles from './Styles';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSelector } from 'react-redux';
+import { databases } from '../../db/AppwriteDB';
+import DBkeys from '../../Constant/DBkeys';
 import { RootState } from '../../Redux/store';
-import { FA5Style } from 'react-native-vector-icons/FontAwesome5';
 
 const Delivery_Payment = () => {
   const [selectedOption, setSelectedOption] = useState('delivery');
@@ -18,7 +19,6 @@ const Delivery_Payment = () => {
   const [isEditingContact, setIsEditingContact] = useState(false);
   const [isEditingDeliveryTime, setIsEditingDeliveryTime] = useState(false);
   const [isEditingPaymentOption, setIsEditingPaymentOption] = useState(false);
-
 
   const [address, setAddress] = useState('1T-1, Yeses Building, 3rd Avenue, West, Anna Nagar, Chennai, TN-600040.');
   const [contact, setContact] = useState('+92 00000 00000');
@@ -35,12 +35,38 @@ const Delivery_Payment = () => {
   }, [cartItems]);
 
   const TAX_AMOUNT = 40.0;
-
   const tax = subtotal > 0 ? TAX_AMOUNT : 0;
   const total = subtotal + tax;
 
   const handleSelection = (option: React.SetStateAction<string>) => {
     setSelectedOption(option);
+  };
+
+  const handleConfirm = async () => {
+    const formattedProducts = cartItems.map((item) => `${item.name} (x${item.quantity})`);
+
+    const orderData = {
+      Address: address,
+      Contact: contact,
+      DeliveryTime: deliveryTime,
+      Payment_Option: paymentOption,
+      Product: formattedProducts,
+    };
+
+    try {
+      const response = await databases.createDocument(
+        DBkeys.Database_id,
+        DBkeys.order_id,
+        'unique()',
+        orderData
+      );
+
+      Alert.alert('Success', 'Your order has been placed successfully!');
+      console.log('Order saved:', response);
+    } catch (error) {
+      console.error('Error saving order:', error);
+      Alert.alert('Error', 'Failed to place your order. Please try again.');
+    }
   };
 
   return (
@@ -50,7 +76,9 @@ const Delivery_Payment = () => {
       <KeyboardAwareScrollView
         contentContainerStyle={Styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps='handled'>
+        keyboardShouldPersistTaps="handled"
+      >
+
         <View style={Styles.selectingContainermain}>
           <View style={Styles.selectingContainersub}>
             <TouchableOpacity
@@ -83,8 +111,9 @@ const Delivery_Payment = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{  backgroundColor: 'white', justifyContent: "space-evenly", alignItems: 'center', gap:10, marginVertical:10  }}>
-          {/* adderesees card */}
+
+        <View style={{ backgroundColor: 'white', justifyContent: 'space-evenly', alignItems: 'center', gap: 10, marginVertical: 10 }}>
+          {/* Address Card */}
           <View style={Styles.FirstCard}>
             <View style={Styles.mainiconCont}>
               <View style={Styles.iconBox}>
@@ -95,16 +124,12 @@ const Delivery_Payment = () => {
               <Text style={Styles.AddressText}>Address</Text>
               {isEditingAddress ? (
                 <TextInput
-                  style={{
-                    ...Styles.compAdd
-
-                  }}
+                  style={Styles.compAdd}
                   value={address}
                   onChangeText={setAddress}
                   placeholder={address}
                   multiline={false}
                   autoFocus
-
                 />
               ) : (
                 <Text style={Styles.compAdd}>{address}</Text>
@@ -118,7 +143,7 @@ const Delivery_Payment = () => {
             </TouchableOpacity>
           </View>
 
-          {/* card Contact  */}
+          {/* Contact Card */}
           <View style={Styles.FirstCard}>
             <View style={Styles.mainiconCont}>
               <View style={Styles.iconBox}>
@@ -127,19 +152,14 @@ const Delivery_Payment = () => {
             </View>
             <View style={Styles.universalTextmainContainer}>
               <Text style={Styles.AddressText}>Contact</Text>
-
               {isEditingContact ? (
                 <TextInput
-                  style={{
-                    ...Styles.compAdd
-
-                  }}
+                  style={Styles.compAdd}
                   value={contact}
-                  placeholder={contact}
                   onChangeText={setContact}
+                  placeholder={contact}
                   multiline={false}
                   autoFocus
-
                 />
               ) : (
                 <Text style={Styles.compAdd}>{contact}</Text>
@@ -153,7 +173,7 @@ const Delivery_Payment = () => {
             </TouchableOpacity>
           </View>
 
-          {/* card Delivery Time */}
+          {/* Delivery Time Card */}
           <View style={Styles.FirstCard}>
             <View style={Styles.mainiconCont}>
               <View style={Styles.iconBox}>
@@ -164,15 +184,11 @@ const Delivery_Payment = () => {
               <Text style={Styles.AddressText}>Delivery Time</Text>
               {isEditingDeliveryTime ? (
                 <TextInput
-                  style={{
-                    ...Styles.compAdd, textAlignVertical: 'top',
-
-                  }}
+                  style={Styles.compAdd}
                   value={deliveryTime}
+                  onChangeText={setDeliveryTime}
                   placeholder={deliveryTime}
                   multiline={false}
-                  onChangeText={setDeliveryTime}
-
                 />
               ) : (
                 <Text style={Styles.compAdd}>{deliveryTime}</Text>
@@ -185,22 +201,19 @@ const Delivery_Payment = () => {
               <Icon3 name={isEditingDeliveryTime ? 'check' : 'edit'} size={18} color={Colors.secondary} />
             </TouchableOpacity>
           </View>
-          {/* card Payment Option */}
+
+          {/* Payment Option Card */}
           <View style={Styles.FirstCard}>
             <View style={Styles.mainiconCont}>
               <View style={Styles.iconBox}>
                 <IconPay name="payment" size={30} color={Colors.primary} />
               </View>
             </View>
-
             <View style={Styles.universalTextmainContainer}>
               <Text style={Styles.AddressText}>Payment Option</Text>
               {isEditingPaymentOption ? (
                 <TextInput
-                  style={{
-                    ...Styles.compAdd
-
-                  }}
+                  style={Styles.compAdd}
                   value={paymentOption}
                   onChangeText={setPaymentOption}
                   multiline={false}
@@ -212,40 +225,38 @@ const Delivery_Payment = () => {
             </View>
             <TouchableOpacity
               style={Styles.forwrsdIconCont}
-              onPress={() => setIsEditingPaymentOption((prev) => !prev)}>
-              <Icon3 name={isEditingPaymentOption ? 'check' : 'edit'} size={18} color={Colors.secondary } />
+              onPress={() => setIsEditingPaymentOption((prev) => !prev)}
+            >
+              <Icon3 name={isEditingPaymentOption ? 'check' : 'edit'} size={18} color={Colors.secondary} />
             </TouchableOpacity>
           </View>
-
         </View>
         <View style={Styles.dottedview}>
-           <Text style={Styles.PromoText}>Add Promo Code</Text>
-         </View>
-   
+          <Text style={Styles.PromoText}>Add Promo Code</Text>
+        </View>
         <View style={Styles.subcont2}>
-           <View style={Styles.dash} />
-           <View style={Styles.calTextContainer}>
-             <View style={Styles.cal1cont}>
-               <Text style={Styles.subtotalText}>Subtotal:</Text>
-               <Text style={Styles.subtotalAmount}>Rs {subtotal.toFixed(2)}</Text>
-             </View>
-             <View style={Styles.cal2cont}>
-               <Text style={Styles.taxText}>Tax & Fee:</Text>
-               <Text style={Styles.taxAmount}>Rs {tax.toFixed(2)}</Text>
-             </View>
-             <View style={Styles.line} />
-             <View style={Styles.totalmain}>
-               <Text style={Styles.totalText}>Total:</Text>
-               <Text style={Styles.totalAmount}>Rs {total.toFixed(2)}</Text>
-             </View>
-           </View>
-           <View style={Styles.touchablecont}>
-             <Touchable title="CONFIRM" />
-           </View>
-         </View>
+          <View style={Styles.dash} />
+          <View style={Styles.calTextContainer}>
+            <View style={Styles.cal1cont}>
+              <Text style={Styles.subtotalText}>Subtotal:</Text>
+              <Text style={Styles.subtotalAmount}>Rs {subtotal.toFixed(2)}</Text>
+            </View>
+            <View style={Styles.cal2cont}>
+              <Text style={Styles.taxText}>Tax & Fee:</Text>
+              <Text style={Styles.taxAmount}>Rs {tax.toFixed(2)}</Text>
+            </View>
+            <View style={Styles.line} />
+            <View style={Styles.totalmain}>
+              <Text style={Styles.totalText}>Total:</Text>
+              <Text style={Styles.totalAmount}>Rs {total.toFixed(2)}</Text>
+            </View>
+          </View>
+          <View style={Styles.touchablecont}>
+            <Touchable title="CONFIRM" onPress={handleConfirm} />
+          </View>
+        </View>
       </KeyboardAwareScrollView>
     </>
-
   );
 };
 
