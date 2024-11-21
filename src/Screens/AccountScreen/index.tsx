@@ -9,8 +9,10 @@ import Colors from '../../Constant/Colors';
 import Images from '../../Constant/Images';
 import Styles from './Styles';
 import { databases } from '../../db/AppwriteDB';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import DBkeys from '../../Constant/DBkeys';
 import { Query } from 'appwrite';
+import { TextInput } from 'react-native-gesture-handler';
 
 export type RootStackParamList = {
     tab: {
@@ -28,13 +30,17 @@ const AccountScreen = () => {
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
     const [favoriteShops, setFavoriteShops] = useState<Shop[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [selectedOption, setSelectedOption] = useState('Favourite');
+
+    const handleSelection = (option: string) => {
+        setSelectedOption(option);
+    };
 
     useFocusEffect(
         React.useCallback(() => {
             StatusBar.setBackgroundColor(Colors.primary);
             StatusBar.setBarStyle('light-content');
 
-            
             const fetchFavoriteShops = async () => {
                 setIsLoading(true);
                 try {
@@ -62,7 +68,7 @@ const AccountScreen = () => {
             };
 
             fetchFavoriteShops();
-        }, []) 
+        }, [])
     );
 
     const toggleHeartColor = async (shopId: string) => {
@@ -119,34 +125,97 @@ const AccountScreen = () => {
 
     return (
         <View style={Styles.mainContainer}>
-            <View style={Styles.headericonConatiner}>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
-                >
-                    <Icon name="menu" color={Colors.White} size={24} />
-                </TouchableOpacity>
-            </View>
-            <View style={Styles.ProContainer}>
-                <Image source={Images.Profilepic} style={Styles.profileImage} />
-                <Text style={Styles.profileName}>Saddam Ahmed Nisar</Text>
-            </View>
-            <View style={Styles.FvrtMain}>
-                <View style={Styles.sub2TextCont}>
-                    <Text style={Styles.sub2Text}>Favourite Coffresh Shop’s:</Text>
+            <KeyboardAwareScrollView
+                 contentContainerStyle={{ flexGrow: 1,}}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+            >
+
+                <View style={Styles.headericonConatiner}>
+                    <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
+                    >
+                        <Icon name="menu" color={Colors.White} size={24} />
+                    </TouchableOpacity>
                 </View>
-                {isLoading ? (
-                    <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
+                <View style={Styles.ProContainer}>
+                    <Image source={Images.Profilepic} style={Styles.profileImage} />
+                    <Text style={Styles.profileName}>Saddam Ahmed Nisar</Text>
+                </View>
+
+                <View style={Styles.selectingContainermain}>
+                    <View style={Styles.selectingContainersub}>
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            style={[
+                                Styles.selfpickCont,
+                                {
+                                    backgroundColor: selectedOption === 'Favourite' ? 'white' : Colors.selfcard,
+                                },
+                            ]}
+                            onPress={() => handleSelection('Favourite')}
+                        >
+                            <Text style={{ color: selectedOption === 'Favourite' ? Colors.primary : Colors.Mat_black }}>
+                                Favourite
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            style={[
+                                Styles.delivery,
+                                {
+                                    backgroundColor: selectedOption === 'My Order' ? 'white' : Colors.selfcard,
+                                },
+                            ]}
+                            onPress={() => handleSelection('My Order')}
+                        >
+                            <Text style={{ color: selectedOption === 'My Order' ? Colors.primary : Colors.Mat_black }}>
+                                My Order
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+
+
+                {selectedOption === 'Favourite' ? (
+                    <View style={Styles.FvrtMain}>
+                        <View style={Styles.sub2TextCont}>
+                            <Text style={Styles.sub2Text}>Favourite Coffresh Shop’s:</Text>
+                        </View>
+                        {isLoading ? (
+                            <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
+                        ) : (
+                            <FlatList
+                                data={favoriteShops}
+                                keyExtractor={(item) => item.id}
+                                renderItem={renderShopItem}
+                                style={Styles.scrollcont}
+                                ListEmptyComponent={<Text style={Styles.emptyCompText}>No favourite shops found</Text>}
+                            />
+                        )}
+                    </View>
                 ) : (
-                    <FlatList
-                        data={favoriteShops}
-                        keyExtractor={(item) => item.id}
-                        renderItem={renderShopItem}
-                        style={Styles.scrollcont}
-                        ListEmptyComponent={<Text style={Styles.emptyCompText}>No favourite shops found</Text>}
-                    />
+                    <View style={Styles.FvrtMain}>
+                        <View style={Styles.sub2TextCont}>
+                            <Text style={Styles.sub2Text}>My Orders:</Text>
+                        </View>
+                        {isLoading ? (
+                            <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 20 }} />
+                        ) : (
+                            
+                            <View style={Styles.ordercheck}>
+                                <TextInput style={Styles.orderInput} placeholder='Enter Phone No to check your order'></TextInput>
+                                <TouchableOpacity activeOpacity={0.7} style={Styles.orderbtn}>
+                                    <Text style={Styles.orderbtnText}>Check</Text>
+                                </TouchableOpacity>
+                            </View>
+                       
+                        )}
+                    </View>
                 )}
-            </View>
+
+            </KeyboardAwareScrollView>
         </View>
     );
 };

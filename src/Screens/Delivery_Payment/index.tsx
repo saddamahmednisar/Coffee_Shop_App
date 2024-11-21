@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Text, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { Text, TouchableOpacity, View, TextInput } from 'react-native';
 import Icon3 from 'react-native-vector-icons/AntDesign';
 import Iconadr from 'react-native-vector-icons/Entypo';
 import IconPay from 'react-native-vector-icons/MaterialIcons';
@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { databases } from '../../db/AppwriteDB';
 import DBkeys from '../../Constant/DBkeys';
 import { RootState } from '../../Redux/store';
+import Toast from 'react-native-toast-message';
 
 const Delivery_Payment = () => {
   const [selectedOption, setSelectedOption] = useState('delivery');
@@ -20,10 +21,10 @@ const Delivery_Payment = () => {
   const [isEditingDeliveryTime, setIsEditingDeliveryTime] = useState(false);
   const [isEditingPaymentOption, setIsEditingPaymentOption] = useState(false);
 
-  const [address, setAddress] = useState('1T-1, Yeses Building, 3rd Avenue, West, Anna Nagar, Chennai, TN-600040.');
-  const [contact, setContact] = useState('+92 00000 00000');
-  const [deliveryTime, setDeliveryTime] = useState('As soon as possible');
-  const [paymentOption, setPaymentOption] = useState('Cash on delivery');
+  const [address, setAddress] = useState('Add your address here');
+  const [contact, setContact] = useState('Add your contact number');
+  const [deliveryTime, setDeliveryTime] = useState('Your delivery time');
+  const [paymentOption, setPaymentOption] = useState('Your Cash Method');
 
   const cartItems = useSelector((state: RootState) => state.cart.items);
 
@@ -43,6 +44,21 @@ const Delivery_Payment = () => {
   };
 
   const handleConfirm = async () => {
+
+    if (
+      address === 'Add your address here' ||
+      contact === 'Add your contact number' ||
+      deliveryTime === 'Your delivery time' ||
+      paymentOption === 'Your Cash Method'
+    ) {
+      Toast.show({
+        type: 'error',
+        text1: 'Add your data',
+        text2: 'Please fill in all fields before confirming your order.',
+      });
+      return; 
+    }
+
     const formattedProducts = cartItems.map((item) => `${item.name} (x${item.quantity})`);
 
     const orderData = {
@@ -60,12 +76,25 @@ const Delivery_Payment = () => {
         'unique()',
         orderData
       );
-
-      Alert.alert('Success', 'Your order has been placed successfully!');
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Your order has been placed successfully!',
+      });
       console.log('Order saved:', response);
+
+      setAddress('Add your address here');
+      setContact('Add your contact number');
+      setDeliveryTime('Your delivery time');
+      setPaymentOption('Your Cash Method');
+
     } catch (error) {
       console.error('Error saving order:', error);
-      Alert.alert('Error', 'Failed to place your order. Please try again.');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Failed to place your order. Please try again.',
+      });
     }
   };
 
@@ -78,7 +107,6 @@ const Delivery_Payment = () => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-
         <View style={Styles.selectingContainermain}>
           <View style={Styles.selectingContainersub}>
             <TouchableOpacity
@@ -231,6 +259,7 @@ const Delivery_Payment = () => {
             </TouchableOpacity>
           </View>
         </View>
+
         <View style={Styles.dottedview}>
           <Text style={Styles.PromoText}>Add Promo Code</Text>
         </View>

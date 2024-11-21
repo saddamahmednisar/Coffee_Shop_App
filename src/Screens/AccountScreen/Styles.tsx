@@ -11,19 +11,20 @@ const Styles = StyleSheet.create({
     headericonConatiner: {
         flex: 0.07,
         backgroundColor: Colors.primary,
-        justifyContent:'center',
+        justifyContent: 'center',
         paddingHorizontal: 14
     },
-    ProContainer:{
+    ProContainer: {
         flex: 0.3,
         backgroundColor: Colors.primary,
         justifyContent: 'flex-start',
-        alignItems:'center'
+        alignItems: 'center',
+
 
     },
     profileImage: {
-        width: "30%",
-        height: "55%",
+        width: "28%",
+        height: "57%",
         borderRadius: 75,
         marginBottom: 10,
     },
@@ -33,7 +34,51 @@ const Styles = StyleSheet.create({
         color: Colors.White,
         marginTop: 5
     },
-    FvrtMain:{
+    selectingContainermain: {
+        height: 50,
+        alignItems: 'center',
+        paddingHorizontal: 14,
+        paddingVertical: 3,
+        backgroundColor: Colors.background,
+        marginTop: 10
+
+
+    },
+    selectingContainersub: {
+        height: "100%",
+        width: "100%",
+        backgroundColor: Colors.selfcard,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center'
+    },
+    selfpickCont: {
+        height: "80%",
+        width: "45%",
+        backgroundColor: Colors.selfcard,
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: "center"
+    },
+    selfpictText: {
+        fontFamily: Fonts.Regular,
+        color: Colors.Mat_black,
+        fontSize: 12
+    },
+    delivery: {
+        height: "80%",
+        width: "45%",
+        backgroundColor: Colors.White,
+        borderRadius: 4,
+        justifyContent: 'center',
+        alignItems: "center"
+    },
+    deliveryText: {
+        fontFamily: Fonts.Regular,
+        color: Colors.primary,
+        fontSize: 12
+    },
+    FvrtMain: {
         flex: 0.63,
         backgroundColor: Colors.background
     },
@@ -64,7 +109,7 @@ const Styles = StyleSheet.create({
         shadowRadius: 1,
         shadowOpacity: 0.2,
         elevation: 4,
-        shadowColor:Colors.border_shadow
+        shadowColor: Colors.border_shadow
 
     },
     loc1: {
@@ -113,7 +158,7 @@ const Styles = StyleSheet.create({
     },
     kmText: {
         fontSize: 12,
-        color:  Colors.dark_grey
+        color: Colors.dark_grey
     },
 
     loc1TC2: {
@@ -138,9 +183,37 @@ const Styles = StyleSheet.create({
     myEmptyStarStyle: {
         color: Colors.White,
     },
-    emptyCompText:{
-        alignSelf:"center",
+    emptyCompText: {
+        alignSelf: "center",
         fontFamily: Fonts.Medium
+    },
+    ordercheck: {
+        height: "12%",
+        margin: 14,
+        flexDirection: 'row',
+        justifyContent:'space-evenly'
+    },
+    orderInput: {
+        width: "70%",
+        backgroundColor: Colors.White,
+        borderRadius: 10,
+        borderColor: Colors.dark_grey,
+        borderWidth: 1,
+        paddingLeft: 10
+    },
+    orderbtn: {
+        width: "23%",
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.primary,
+        borderRadius: 10,
+        borderColor: Colors.White,
+        borderWidth: 1,
+    },
+    orderbtnText: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: Colors.White
     }
 });
 export default Styles;
